@@ -28,11 +28,9 @@ function scanBarcode(target) {
 
                 let barcode = result.getText();
 
-                // 先頭と末尾の a または A を削除
                 barcode = barcode.replace(/^[Aa]/, "");
                 barcode = barcode.replace(/[Aa]$/, "");
 
-                // 末尾3桁取得
                 let code = barcode.slice(-3);
 
                 reader.reset();
@@ -64,8 +62,7 @@ function scanBarcode(target) {
 
 function judge() {
 
-    const result =
-        document.getElementById("result");
+    const result = document.getElementById("result");
 
     if (!(code1 in containers) ||
         !(code2 in containers)) {
@@ -79,17 +76,13 @@ function judge() {
 
         result.innerHTML = "〇";
         result.style.color = "green";
-
-        document.body.style.backgroundColor =
-            "#ccffcc";
+        document.body.style.backgroundColor = "#ccffcc";
 
     } else {
 
         result.innerHTML = "×";
         result.style.color = "red";
-
-        document.body.style.backgroundColor =
-            "#ffcccc";
+        document.body.style.backgroundColor = "#ffcccc";
 
         beep();
     }
@@ -99,18 +92,15 @@ function beep() {
 
     const ctx =
         new (window.AudioContext ||
-            window.webkitAudioContext)();
+             window.webkitAudioContext)();
 
-    const osc =
-        ctx.createOscillator();
+    const osc = ctx.createOscillator();
 
     osc.connect(ctx.destination);
-
     osc.frequency.value = 600;
-
     osc.start();
 
-    setTimeout(function () {
+    setTimeout(() => {
         osc.stop();
     }, 500);
 }
