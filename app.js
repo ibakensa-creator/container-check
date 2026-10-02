@@ -7,6 +7,9 @@ const containers = {
     "007": "尿コップ"
 };
 
+const reader =
+    new ZXing.BrowserMultiFormatReader();
+
 function startScan1() {
     scanBarcode(1);
 }
@@ -17,64 +20,65 @@ function startScan2() {
 
 function scanBarcode(target) {
 
-    const qr = new Html5Qrcode("reader");
+    reader.decodeFromVideoDevice(
+        null,
+        "video",
+        (result, err) => {
 
-    qr.start(
-        { facingMode: "environment" },
-        {
-            fps: 10,
-            qrbox: 250
-        },
+            if(result){
 
-        function(decodedText) {
+                let barcode =
+                    result.getText();
 
-            qr.stop();
+                let code =
+                    barcode.slice(-3);
 
-            let code = decodedText.slice(-3);
+                reader.reset();
 
-            if (target === 1) {
+                if(target === 1){
 
-                code1 = code;
+                    code1 = code;
 
-                document.getElementById("barcode1").innerHTML =
-                    "① " + code + " " +
-                    (containers[code] || "対象外");
+                    document.getElementById(
+                        "barcode1"
+                    ).innerHTML =
+                        "① " + code + " " +
+                        (containers[code] || "対象外");
 
-            } else {
+                } else {
 
-                code2 = code;
+                    code2 = code;
 
-                document.getElementById("barcode2").innerHTML =
-                    "② " + code + " " +
-                    (containers[code] || "対象外");
+                    document.getElementById(
+                        "barcode2"
+                    ).innerHTML =
+                        "② " + code + " " +
+                        (containers[code] || "対象外");
 
-                judge();
+                    judge();
+                }
             }
-        },
-
-        function(error) {
         }
     );
 }
 
-function judge() {
+function judge(){
 
-    const result =
+    let result =
         document.getElementById("result");
 
-    if (!(code1 in containers) ||
-        !(code2 in containers)) {
+    if(!(code1 in containers) ||
+       !(code2 in containers)){
 
         result.innerHTML = "対象外";
         result.style.color = "red";
         return;
     }
 
-    if (code1 === code2) {
+    if(code1 === code2){
 
         result.innerHTML = "〇";
         result.style.color = "green";
-
         document.body.style.backgroundColor =
             "#ccffcc";
 
@@ -82,7 +86,6 @@ function judge() {
 
         result.innerHTML = "×";
         result.style.color = "red";
-
         document.body.style.backgroundColor =
             "#ffcccc";
 
@@ -90,11 +93,10 @@ function judge() {
     }
 }
 
-function beep() {
+function beep(){
 
     const ctx =
-        new (window.AudioContext ||
-        window.webkitAudioContext)();
+        new AudioContext();
 
     const osc =
         ctx.createOscillator();
@@ -105,7 +107,7 @@ function beep() {
 
     osc.start();
 
-    setTimeout(function() {
+    setTimeout(() => {
         osc.stop();
-    }, 300);
+    }, 500);
 }
