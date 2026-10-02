@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>容器照合システム</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>容器照合システム</title>
 
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 
-    <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 </head>
+
 <body>
 
-    <h1>容器照合システム</h1>
+<h1>容器照合システム</h1>
 
-    <button onclick="startScan1()">バーコード①読取</button>
-    <button onclick="startScan2()">バーコード②読取</button>
+<button onclick="startScan1()">バーコード①読取</button>
+<button onclick="startScan2()">バーコード②読取</button>
 
-    <p id="barcode1">未読取</p>
-    <p id="barcode2">未読取</p>
+<p id="barcode1">未読取</p>
+<p id="barcode2">未読取</p>
 
-    <h1 id="result"></h1>
+<h1 id="result"></h1>
 
-    <div id="reader" style="width:300px;margin:auto;"></div>
+<div id="reader"></div>
 
-    <script src="app.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
-``
