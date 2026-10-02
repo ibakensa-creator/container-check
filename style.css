@@ -1,0 +1,16 @@
+body{
+    text-align:center;
+    font-family:sans-serif;
+    padding:20px;
+}
+
+button{
+    font-size:22px;
+    padding:15px;
+    margin:10px;
+}
+
+#result{
+    font-size:60px;
+    margin-top:30px;
+}
