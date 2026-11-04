@@ -1,39 +1,140 @@
 
+* {
+    box-sizing: border-box;
+}
+
 body {
-    text-align: center;
     font-family: sans-serif;
-    margin: 15px;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    background: #f5f7fa;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
 }
 
 h1 {
-    font-size: 32px;
-}
-
-button {
-    font-size: 24px;
-    padding: 15px;
-    margin: 10px;
+    font-size: 34px;
+    margin: 15px 0 25px;
 }
 
 #status {
     font-size: 22px;
-    margin: 20px;
     font-weight: bold;
+    padding: 15px;
+    background: #e4edf7;
+    border-radius: 10px;
 }
 
-p {
-    font-size: 24px;
+.scan-area {
+    display: flex;
+    gap: 20px;
+    margin: 25px 0;
+}
+
+.scan-card {
+    flex: 1;
+    background: white;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    padding: 20px 10px;
+}
+
+.scan-card h2 {
+    font-size: 25px;
+}
+
+button {
+    font-size: 23px;
+    font-weight: bold;
+    padding: 15px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.scan-card button {
+    width: 100%;
+    background: #dcecff;
+    border: 1px solid #6699cc;
+}
+
+.barcode {
+    font-size: 21px;
+    line-height: 1.8;
+    margin-top: 20px;
+    overflow-wrap: anywhere;
+}
+
+#result-area {
+    margin: 25px 0;
+    padding: 35px 10px;
+    border-radius: 15px;
+    background: #e5e5e5;
 }
 
 #result {
-    font-size: 100px;
+    font-size: 65px;
     font-weight: bold;
 }
 
+#result-area.success {
+    background: #b9f0c3;
+    color: #08752a;
+}
+
+#result-area.error {
+    background: #ffbcbc;
+    color: #d00000;
+}
+
+.input-area {
+    margin: 25px 0;
+}
+
+.input-area p {
+    font-size: 18px;
+}
+
 #scannerInput {
-    font-size: 20px;
-    padding: 12px;
-    width: 80%;
-    max-width: 500px;
+    width: 90%;
+    max-width: 550px;
+    font-size: 25px;
+    padding: 15px;
+    text-align: center;
+    border: 2px solid #888;
+    border-radius: 8px;
+}
+
+.reset-button {
+    background: #555;
+    color: white;
+    border: none;
     margin: 15px;
+}
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    .scan-area {
+        flex-direction: column;
+    }
+
+    #result {
+        font-size: 48px;
+    }
+
+    .scan-card h2 {
+        font-size: 21px;
+    }
+
 }
