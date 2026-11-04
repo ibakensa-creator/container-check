@@ -10,26 +10,61 @@
 
 <body>
 
-<h1>容器照合システム</h1>
+<div class="container">
 
-<div id="status">読み取り対象を選択してください</div>
+    <h1>容器照合システム</h1>
 
-<button onclick="selectScan(1)">バーコード①読取</button>
-<button onclick="selectScan(2)">バーコード②読取</button>
+    <p id="status">読み取り対象を選択してください</p>
 
-<p id="barcode1">① 未読取</p>
-<p id="barcode2">② 未読取</p>
+    <div class="scan-area">
 
-<h1 id="result">照合待ち</h1>
+        <section class="scan-card">
+            <h2>① 検体ラベル</h2>
+            <button type="button" onclick="selectScan(1)">
+                ① 読み取り
+            </button>
+            <div id="barcode1" class="barcode">
+                未読取
+            </div>
+        </section>
 
-<input
-    type="text"
-    id="scannerInput"
-    autocomplete="off"
-    placeholder="バーコード読み取り待ち"
->
+        <section class="scan-card">
+            <h2>② 容器ラベル</h2>
+            <button type="button" onclick="selectScan(2)">
+                ② 読み取り
+            </button>
+            <div id="barcode2" class="barcode">
+                未読取
+            </div>
+        </section>
 
-<button onclick="resetScan()">リセット</button>
+    </div>
+
+    <div id="result-area">
+        <div id="result">照合待ち</div>
+    </div>
+
+    <div class="input-area">
+        <p>バーコード入力欄（11桁）</p>
+
+        <form id="scanForm">
+            <input
+                type="text"
+                id="scannerInput"
+                maxlength="30"
+                autocomplete="off"
+                placeholder="スキャナーで読み取ってください"
+            >
+            <button type="submit" hidden></button>
+        </form>
+    </div>
+
+    <button type="button" class="reset-button"
+        onclick="resetScan()">
+        リセット
+    </button>
+
+</div>
 
 <script src="app.js"></script>
 
