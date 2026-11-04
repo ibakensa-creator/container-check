@@ -1,22 +1,39 @@
-body{
-    text-align:center;
-    font-family:sans-serif;
-    margin:10px;
+
+body {
+    text-align: center;
+    font-family: sans-serif;
+    margin: 15px;
 }
 
-button{
-    font-size:24px;
-    padding:15px;
-    margin:10px;
+h1 {
+    font-size: 32px;
 }
 
-video{
-    width:100%;
-    max-width:700px;
-    border:1px solid black;
+button {
+    font-size: 24px;
+    padding: 15px;
+    margin: 10px;
 }
 
-#result{
-    font-size:100px;
-    font-weight:bold;
+#status {
+    font-size: 22px;
+    margin: 20px;
+    font-weight: bold;
+}
+
+p {
+    font-size: 24px;
+}
+
+#result {
+    font-size: 100px;
+    font-weight: bold;
+}
+
+#scannerInput {
+    font-size: 20px;
+    padding: 12px;
+    width: 80%;
+    max-width: 500px;
+    margin: 15px;
 }
