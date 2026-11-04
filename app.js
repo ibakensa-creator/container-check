@@ -1,4 +1,3 @@
-
 let code1 = "";
 let code2 = "";
 let activeTarget = 0;
@@ -23,7 +22,6 @@ function normalizeBarcode(value) {
 
 // 読み取り対象選択
 function selectScan(target) {
-
     activeTarget = target;
     processing = false;
 
@@ -45,9 +43,11 @@ input.addEventListener("input", function() {
 
     const barcode = normalizeBarcode(input.value);
 
+    // 入力欄にも半角数字を反映
+    input.value = barcode;
+
     // 11桁になったら少し待って確定
     if (barcode.length >= 11) {
-
         scanTimer = setTimeout(function() {
             processBarcode();
         }, 500);
