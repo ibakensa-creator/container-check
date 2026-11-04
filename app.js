@@ -2,8 +2,10 @@
 let code1 = "";
 let code2 = "";
 let activeTarget = 0;
+let scanTimer = null;
+let processing = false;
 
-// 容器分類
+// 容器分類：末尾3桁
 const containers = {
     "091": "血ガス容器",
     "518": "PN2",
@@ -11,38 +13,58 @@ const containers = {
 };
 
 const input = document.getElementById("scannerInput");
-const form = document.getElementById("scanForm");
 
 // 読み取り対象を選択
 function selectScan(target) {
 
     activeTarget = target;
+    processing = false;
 
-    const name = target === 1
-        ? "検体ラベル①"
-        : "容器ラベル②";
-
-    document.getElementById("status").textContent =
-        name + "をスキャンしてください";
+    clearTimeout(scanTimer);
 
     input.value = "";
     input.focus();
+
+    document.getElementById("status").textContent =
+        target === 1
+        ? "① 検体ラベルを読み取ってください"
+        : "② 容器ラベルを読み取ってください";
 }
 
-// Enterキーで読み取り確定
-form.addEventListener("submit", function(e) {
+// バーコード入力を監視
+input.addEventListener("input", function() {
 
-    e.preventDefault();
+    clearTimeout(scanTimer);
 
-    if (activeTarget === 0) {
-        document.getElementById("status").textContent =
-            "先に読み取りボタンを押してください";
-        return;
+    // Enterを送信しないスキャナーにも対応
+    if (input.value.length >= 11) {
+
+        scanTimer = setTimeout(function() {
+            processBarcode();
+        }, 250);
+
     }
+});
+
+// Enterを送信するスキャナーにも対応
+input.addEventListener("keydown", function(e) {
+
+    if (e.key === "Enter") {
+
+        e.preventDefault();
+
+        clearTimeout(scanTimer);
+        processBarcode();
+    }
+});
+
+// バーコード確定処理
+function processBarcode() {
+
+    if (activeTarget === 0 || processing) return;
 
     const barcode = input.value.trim();
 
-    // 11桁の数字か確認
     if (!/^\d{11}$/.test(barcode)) {
 
         document.getElementById("status").textContent =
@@ -53,93 +75,91 @@ form.addEventListener("submit", function(e) {
         return;
     }
 
+    processing = true;
+
     // 末尾3桁を取得
     const code = barcode.slice(-3);
 
-    // ①検体ラベル
+    // 分類を明示的に取得
+    const containerName =
+        Object.prototype.hasOwnProperty.call(containers, code)
+        ? containers[code]
+        : "対象外";
+
     if (activeTarget === 1) {
 
         code1 = code;
 
         document.getElementById("barcode1").innerHTML =
-            '<strong>' + barcode + '</strong><br>' +
-            (containers[code] || "対象外");
+            "<strong>" + barcode + "</strong><br>" +
+            "分類コード：" + code + "<br>" +
+            "容器：" + containerName;
 
-    }
-
-    // ②容器ラベル
-    else {
+    } else {
 
         code2 = code;
 
         document.getElementById("barcode2").innerHTML =
-            '<strong>' + barcode + '</strong><br>' +
-            (containers[code] || "対象外");
-
+            "<strong>" + barcode + "</strong><br>" +
+            "分類コード：" + code + "<br>" +
+            "容器：" + containerName;
     }
 
     activeTarget = 0;
     input.value = "";
 
-    // 両方読み取ったら照合
+    document.getElementById("status").textContent =
+        "読み取り完了";
+
     if (code1 !== "" && code2 !== "") {
-
         judge();
-
-    } else {
-
-        document.getElementById("status").textContent =
-            "読み取り完了。次のバーコードを選択してください";
-
     }
-
-});
+}
 
 // 照合処理
 function judge() {
 
     const result = document.getElementById("result");
-    const resultArea = document.getElementById("result-area");
+    const area = document.getElementById("result-area");
 
-    resultArea.className = "";
+    area.className = "";
 
-    // 登録されていないバーコード
-    if (!(code1 in containers) ||
-        !(code2 in containers)) {
+    const valid1 =
+        Object.prototype.hasOwnProperty.call(containers, code1);
+
+    const valid2 =
+        Object.prototype.hasOwnProperty.call(containers, code2);
+
+    if (!valid1 || !valid2) {
 
         result.textContent = "対象外";
-        resultArea.classList.add("error");
+        area.classList.add("error");
 
         document.getElementById("status").textContent =
-            "登録されていない容器です";
+            "登録されていない分類コードです";
 
         beep();
         return;
     }
 
-    // 一致
     if (code1 === code2) {
 
         result.textContent = "〇 一致";
-        resultArea.classList.add("success");
+        area.classList.add("success");
 
         document.getElementById("status").textContent =
             "照合完了：容器は一致しています";
 
-    }
-
-    // 不一致
-    else {
+    } else {
 
         result.textContent = "× 不一致";
-        resultArea.classList.add("error");
+        area.classList.add("error");
 
         document.getElementById("status").textContent =
             "警告：容器が一致しません！";
 
         beep();
     }
-
 }
 
 // 警告音
@@ -159,15 +179,13 @@ function beep() {
         osc.frequency.value = 600;
 
         osc.start();
-
         osc.stop(ctx.currentTime + 0.5);
 
         osc.onended = () => ctx.close();
 
     } catch (e) {
-        console.log("警告音を再生できません", e);
+        console.log(e);
     }
-
 }
 
 // リセット
@@ -176,6 +194,9 @@ function resetScan() {
     code1 = "";
     code2 = "";
     activeTarget = 0;
+    processing = false;
+
+    clearTimeout(scanTimer);
 
     document.getElementById("barcode1").textContent =
         "未読取";
