@@ -5,7 +5,6 @@ let activeTarget = 0;
 let scanTimer = null;
 let processing = false;
 
-// 容器分類：末尾3桁
 const containers = {
     "091": "血ガス容器",
     "518": "PN2",
@@ -14,7 +13,15 @@ const containers = {
 
 const input = document.getElementById("scannerInput");
 
-// 読み取り対象を選択
+// 全角数字を半角に変換
+function normalizeBarcode(value) {
+    return value
+        .normalize("NFKC")
+        .replace(/\s/g, "")
+        .replace(/^[Aa]|[Aa]$/g, "");
+}
+
+// 読み取り対象選択
 function selectScan(target) {
 
     activeTarget = target;
@@ -31,44 +38,43 @@ function selectScan(target) {
         : "② 容器ラベルを読み取ってください";
 }
 
-// バーコード入力を監視
+// 入力を監視
 input.addEventListener("input", function() {
 
     clearTimeout(scanTimer);
 
-    // Enterを送信しないスキャナーにも対応
-    if (input.value.length >= 11) {
+    const barcode = normalizeBarcode(input.value);
+
+    // 11桁になったら少し待って確定
+    if (barcode.length >= 11) {
 
         scanTimer = setTimeout(function() {
             processBarcode();
-        }, 250);
-
+        }, 500);
     }
 });
 
-// Enterを送信するスキャナーにも対応
+// Enterにも対応
 input.addEventListener("keydown", function(e) {
 
     if (e.key === "Enter") {
-
         e.preventDefault();
-
         clearTimeout(scanTimer);
         processBarcode();
     }
 });
 
-// バーコード確定処理
+// バーコード確定
 function processBarcode() {
 
     if (activeTarget === 0 || processing) return;
 
-    const barcode = input.value.trim();
+    const barcode = normalizeBarcode(input.value);
 
     if (!/^\d{11}$/.test(barcode)) {
 
         document.getElementById("status").textContent =
-            "読み取りエラー：11桁の数字ではありません";
+            "読み取りエラー：11桁の半角数字に変換できません";
 
         input.value = "";
         input.focus();
@@ -77,14 +83,11 @@ function processBarcode() {
 
     processing = true;
 
-    // 末尾3桁を取得
     const code = barcode.slice(-3);
 
-    // 分類を明示的に取得
-    const containerName =
-        Object.prototype.hasOwnProperty.call(containers, code)
-        ? containers[code]
-        : "対象外";
+    const name = Object.prototype.hasOwnProperty.call(
+        containers, code
+    ) ? containers[code] : "対象外";
 
     if (activeTarget === 1) {
 
@@ -93,7 +96,7 @@ function processBarcode() {
         document.getElementById("barcode1").innerHTML =
             "<strong>" + barcode + "</strong><br>" +
             "分類コード：" + code + "<br>" +
-            "容器：" + containerName;
+            "容器：" + name;
 
     } else {
 
@@ -102,21 +105,21 @@ function processBarcode() {
         document.getElementById("barcode2").innerHTML =
             "<strong>" + barcode + "</strong><br>" +
             "分類コード：" + code + "<br>" +
-            "容器：" + containerName;
+            "容器：" + name;
     }
 
     activeTarget = 0;
     input.value = "";
 
-    document.getElementById("status").textContent =
-        "読み取り完了";
-
-    if (code1 !== "" && code2 !== "") {
+    if (code1 && code2) {
         judge();
+    } else {
+        document.getElementById("status").textContent =
+            "読み取り完了。次のバーコードを選択してください";
     }
 }
 
-// 照合処理
+// 照合
 function judge() {
 
     const result = document.getElementById("result");
@@ -124,11 +127,13 @@ function judge() {
 
     area.className = "";
 
-    const valid1 =
-        Object.prototype.hasOwnProperty.call(containers, code1);
+    const valid1 = Object.prototype.hasOwnProperty.call(
+        containers, code1
+    );
 
-    const valid2 =
-        Object.prototype.hasOwnProperty.call(containers, code2);
+    const valid2 = Object.prototype.hasOwnProperty.call(
+        containers, code2
+    );
 
     if (!valid1 || !valid2) {
 
@@ -148,7 +153,7 @@ function judge() {
         area.classList.add("success");
 
         document.getElementById("status").textContent =
-            "照合完了：容器は一致しています";
+            "照合完了：一致しています";
 
     } else {
 
@@ -166,7 +171,6 @@ function judge() {
 function beep() {
 
     try {
-
         const AudioContext =
             window.AudioContext || window.webkitAudioContext;
 
@@ -177,7 +181,6 @@ function beep() {
 
         osc.connect(ctx.destination);
         osc.frequency.value = 600;
-
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
 
@@ -198,17 +201,10 @@ function resetScan() {
 
     clearTimeout(scanTimer);
 
-    document.getElementById("barcode1").textContent =
-        "未読取";
-
-    document.getElementById("barcode2").textContent =
-        "未読取";
-
-    document.getElementById("result").textContent =
-        "照合待ち";
-
+    document.getElementById("barcode1").textContent = "未読取";
+    document.getElementById("barcode2").textContent = "未読取";
+    document.getElementById("result").textContent = "照合待ち";
     document.getElementById("result-area").className = "";
-
     document.getElementById("status").textContent =
         "読み取り対象を選択してください";
 
